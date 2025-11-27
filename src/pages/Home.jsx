@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import "./CSS/globals.css"
-import section2Video from "../assets/videos/section2.mp4";
+import section2Video from "../assets/Videos/section2.mp4";
 import section3Image from "../assets/billboard.jpg";
 import section4Image from "../assets/image4.png";
 import blueBG from "../assets/blueBG.jpg";
@@ -11,7 +11,7 @@ import { LiquidGlassCarousel } from "../components/LiquidGlassCarousel";
 import TypewriterEffect from "../components/TypewriterEffect";
 import UIUX from "../assets/UIUX.png";
 import WEBDEV from "../assets/WEBDEV.png";
-import PrintMaterial from "../assets/PrintMaterial.png";
+import PrintMaterial from "../assets/printMaterial.png";
 import GD from "../assets/GD.jpg";
 import DigitalMarketing from "../assets/digitalMarketing.jpg";
 
