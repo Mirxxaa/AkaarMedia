@@ -9,7 +9,6 @@ const containerVariants = {
     visible: {
         opacity: 1,
         transition: {
-            // Removed staggerChildren here as we'll use individual whileInView triggers
             delayChildren: 0.2, 
         },
     },
@@ -23,7 +22,7 @@ const itemVariants = {
         transition: {
             type: 'spring',
             stiffness: 80,
-            damping: 15, // Slightly increased damping for smoothness
+            damping: 15,
             duration: 0.6
         },
     },
@@ -38,7 +37,6 @@ const SERVICE_CATEGORIES = [
             "We build visual identities that tell your story and set you apart.",
             "Logos, complete brand systems, packaging, guidelines, marketing materials — everything your brand needs to look consistent and professional."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -48,7 +46,6 @@ const SERVICE_CATEGORIES = [
             "From wireframes to polished interfaces — we create digital experiences that feel intuitive, clean, and conversion-focused.",
             "Built using Figma & Framer for seamless collaboration and execution."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -58,7 +55,6 @@ const SERVICE_CATEGORIES = [
             "High-performance websites engineered for speed, stability, and scalability.",
             "We develop using the latest technologies: React, Next.js, Node.js, Python, JavaScript, Webflow, and custom solutions tailored to your business."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -68,7 +64,6 @@ const SERVICE_CATEGORIES = [
             "Grow your brand with effective strategies and performance-driven campaigns.",
             "Meta Ads, Google Ads, content creation, funnel optimization, analytics, and complete digital presence management."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1531545514256-4dc9162e75e1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -78,7 +73,6 @@ const SERVICE_CATEGORIES = [
             "From everyday social content to high-quality animated visuals — we design media that grabs attention and communicates fast.",
             "Brand visuals, illustrations, motion graphics, reels, explainer videos, and 3D animations."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1561472328-863a66bb0f29?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
@@ -88,7 +82,6 @@ const SERVICE_CATEGORIES = [
             "Premium print and production services for brands that want to make an impact offline.",
             "Signage, packaging, wall wraps, indoor & outdoor branding, brochures, display stands, and more — backed by strict QC and delivery standards."
         ],
-        // Changed image for visual distinction
         image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
 ];
@@ -163,13 +156,12 @@ const REASONS = [
     },
 ];
 
-// --- SECTION 2 IMPLEMENTATION: Smooth Scroll-Triggered Text Reveal ---
+// --- SECTION 2 IMPLEMENTATION: Smooth Scroll-Triggered Text Reveal (FIXED FOR MOBILE SCROLLING) ---
 const ScrollTextRevealSection = () => {
     const sectionRef = useRef(null);
 
     const { scrollYProgress } = useScroll({
         target: sectionRef,
-        // Start animation when section enters viewport, end when it leaves
         offset: ["start end", "end start"],
     });
 
@@ -177,15 +169,12 @@ const ScrollTextRevealSection = () => {
 
     // Separate array for image-only layers
     const imageLayers = SERVICE_CATEGORIES.map((service, index) => {
-        // Define the scroll range for this specific service
         const startRange = index / totalCategories;
         const endRange = (index + 1) / totalCategories;
         
-        // Define the transition points for fading (e.g., fade in slightly after start, fade out slightly before end)
         const fadeStart = startRange + 0.05;
         const fadeEnd = endRange - 0.05;
         
-        // Opacity: smooth linear transition for image visibility
         const opacity = useTransform(
             scrollYProgress,
             [startRange, fadeStart, fadeEnd, endRange],
@@ -198,7 +187,6 @@ const ScrollTextRevealSection = () => {
                 style={{ opacity }}
                 src={service.image}
                 alt={service.title}
-                // Full screen properties for background image
                 className="absolute inset-0 w-full h-full object-cover"
             />
         );
@@ -208,21 +196,18 @@ const ScrollTextRevealSection = () => {
     const textLayers = SERVICE_CATEGORIES.map((service, index) => {
         const Icon = service.icon;
         
-        // Define the scroll range for this specific service (same as image)
         const startRange = index / totalCategories;
         const endRange = (index + 1) / totalCategories;
         
         const fadeStart = startRange + 0.02;
         const fadeEnd = endRange - 0.02;
         
-        // Opacity: smooth linear transition for text visibility
         const opacity = useTransform(
             scrollYProgress,
             [startRange, fadeStart, fadeEnd, endRange],
             [0, 1, 1, 0]
         );
 
-        // Subtly push text down as it fades out to reveal the next text layer
         const y = useTransform(
             scrollYProgress, 
             [startRange, fadeStart, fadeEnd, endRange], 
@@ -232,10 +217,8 @@ const ScrollTextRevealSection = () => {
         return (
             <motion.div
                 key={service.title}
-                // Position text content absolutely on the left side
                 className="absolute inset-y-0 left-0 w-full max-w-4xl flex items-center p-8 sm:p-12 md:p-16 lg:p-20 z-20"
             >
-                {/* Apply the motion styles to the inner content container */}
                 <motion.div
                     style={{ opacity, y }}
                     className="max-w-xl"
@@ -257,22 +240,23 @@ const ScrollTextRevealSection = () => {
                         ))}
                     </div>
 
-                    <button
+                    <motion.button // Changed to motion.button to allow Framer Motion props
                         className="mt-10 px-6 py-3 bg-[#006aff] text-white text-base font-medium rounded transition-all duration-300 hover:bg-white hover:text-[#006aff] shadow-lg hover:shadow-xl"
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        onClick={() => console.log(`Learn More about ${service.title}`)}
                     >
                         Learn More
-                    </button>
+                    </motion.button>
                 </motion.div>
             </motion.div>
         );
     });
 
-    // The sticky container holds the background, gradient, and all text layers
     return (
-        // Calculate the total height required for the scroll effect
-        <div ref={sectionRef} className={`h-[${totalCategories * 100}vh] relative`}>
+        // FIXED: Using style to dynamically set height ensures it works on mobile
+        <div ref={sectionRef} style={{ height: `${totalCategories * 100}vh` }} className="relative">
+            {/* FIXED: Added w-full to the sticky container for mobile stability */}
             <div className="sticky top-0 h-screen w-full bg-[#0f0f0f] overflow-hidden">
                 
                 {/* 1. Background Image Layers (fades in/out) */}
@@ -283,7 +267,6 @@ const ScrollTextRevealSection = () => {
                 {/* 2. Black Gradient Overlay (z-10) */}
                 <div 
                     className="absolute inset-0 z-10"
-                    // Tailwind class for a strong black gradient from the left (to make text readable)
                     style={{ 
                         background: 'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.6) 40%, rgba(0,0,0,0.0) 80%, rgba(0,0,0,0) 100%)'
                     }}
@@ -366,8 +349,6 @@ export default function Services() {
                 variants={containerVariants} 
             >
                 
-                {/* 1. HEADER & SUBTITLE remain the same */}
-                {/* ... */}
                 <motion.h2 
                     className="text-5xl sm:text-6xl lg:text-8xl font-light tracking-tighter mb-4 text-[#006aff] leading-tight" 
                     variants={itemVariants} 
@@ -382,10 +363,8 @@ export default function Services() {
                     A clean, five-step process designed for **clarity**, **efficiency**, and **impactful results**.
                 </motion.p>
 
-                {/* 3. PROCESS TIMELINE */}
                 <div className="relative">
                     
-                    {/* Vertical Line remains the same */}
                     <div className="absolute left-[20px] top-0 h-full w-[2px] bg-gray-800 lg:left-1/2 lg:transform lg:-translate-x-1/2"></div>
 
                     {PROCESS_STEPS.map((step, index) => {
@@ -403,32 +382,25 @@ export default function Services() {
                                 className={`flex mb-20 relative w-full ${isEven ? 'lg:justify-start' : 'lg:justify-end'}`}
                             >
                                 
-                                {/* Timeline Marker - FIXED: Icon displayed on both Mobile and Desktop */}
                                 <div className={`
-                                    // Mobile Positioning
                                     absolute left-[12px] top-0 
-                                    // Desktop Positioning
                                     lg:absolute lg:left-1/2 lg:top-0 lg:transform lg:-translate-x-1/2 
                                     flex items-center justify-center 
-                                    w-8 h-8 lg:w-12 lg:h-12 // Larger size on desktop
+                                    w-8 h-8 lg:w-12 lg:h-12 
                                     rounded-full bg-[#0f0f0f] border-2 border-[#006aff] z-10 
                                 `}>
-                                    {/* Only the Icon is used now, no number element */}
                                     <Icon className="w-4 h-4 text-[#006aff] lg:w-5 lg:h-5" strokeWidth={2} /> 
                                 </div>
                                 
-                                {/* Content Card Container remains the same */}
                                 <div className={`
                                     max-w-full pl-16 
                                     lg:w-[45%] lg:max-w-[45%] lg:pl-0 
                                     lg:order-1 
                                 `}>
-                                    {/* Inner Content Area - Spacing remains the same */}
                                     <div className={`
                                         ${!isEven ? 'lg:pl-10 lg:text-right' : ''}
                                         ${isEven ? 'lg:pr-10 lg:text-left' : ''}
                                     `}>
-                                        {/* NOTE: You still display the number in the heading for context */}
                                         <h3 className="text-3xl font-normal mb-3 tracking-tight text-white leading-snug">
                                             {stepNumber}. {step.title} 
                                         </h3>
@@ -457,7 +429,6 @@ export default function Services() {
                 variants={containerVariants} 
             >
                 
-                {/* 1. HEADER */}
                 <motion.h2 
                     className="text-5xl sm:text-6xl lg:text-8xl font-light tracking-tighter mb-4 text-white leading-tight" 
                     variants={itemVariants} 
@@ -465,7 +436,6 @@ export default function Services() {
                     <span className="text-[#006aff]">OUR</span> EDGE
                 </motion.h2>
 
-                {/* 2. SUBTITLE */}
                 <motion.p 
                     className="text-xl sm:text-2xl lg:text-3xl text-gray-400 mb-16 max-w-4xl font-light leading-relaxed border-l-4 border-gray-800 pl-6"
                     variants={itemVariants}
@@ -473,7 +443,6 @@ export default function Services() {
                     What sets us apart is our commitment to **integrated excellence** and **uncompromised quality**.
                 </motion.p>
 
-                {/* 3. REASONS GRID */}
                 <motion.div 
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
                     variants={containerVariants}
@@ -483,13 +452,8 @@ export default function Services() {
                         return (
                             <motion.div 
                                 key={index}
-                                // Card styling: dark background, subtle border, sleek hover effect
                                 className="p-6 bg-[#0f0f0f] rounded-xl border border-gray-800 transition duration-300 hover:border-[#006aff] hover:shadow-xl hover:shadow-[#006aff]/10 flex flex-col justify-start h-full"
                                 variants={itemVariants}
-                                // Apply individual scroll trigger if desired (remove staggerChildren and enable this for more granular control)
-                                // initial="hidden" 
-                                // whileInView="visible"
-                                // viewport={{ once: true, amount: 0.5 }} 
                             >
                                 <div className="flex items-center mb-4">
                                     <Icon className="w-6 h-6 text-[#006aff] mr-3 flex-shrink-0" strokeWidth={1.5} />
