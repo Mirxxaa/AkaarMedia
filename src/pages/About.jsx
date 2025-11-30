@@ -191,7 +191,7 @@ export default function About() {
   }, [scrollYProgress]);
 
   // OPTIMIZED: Reduced section height to eliminate empty space
-  const SECTION_2_HEIGHT = "400vh"; // Reduced from 2000vh to remove empty space
+  const SECTION_2_HEIGHT = "600vh"; // Reduced from 2000vh to remove empty space
   
   // --- OPTIMIZED Scroll Ranges - Much faster and tighter ---
   // Phase A: Logo Growth (Faster and earlier exit)
