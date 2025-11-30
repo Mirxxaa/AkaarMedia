@@ -150,7 +150,7 @@ const Contact = () => {
                         <div>
                             <p className="text-sm text-gray-400">Email</p>
                             <a href="mailto:contact@akaarmedia.com" className="text-lg text-white font-light hover:text-[#006aff] transition-colors">
-                                contact@akaarmedia.com
+                                connect@akaarmedia.com
                             </a>
                         </div>
                     </motion.div>
@@ -160,17 +160,19 @@ const Contact = () => {
                         <div>
                             <p className="text-sm text-gray-400">Location</p>
                             <p className="text-lg text-white font-light">
-                                Riyadh, Saudi Arabia
+                               Hyderabad, India
                             </p>
                         </div>
                     </motion.div>
+
+                    
 
                     <motion.div className="flex items-start" variants={itemVariants}>
                         <Clock className="w-5 h-5 text-[#006aff] mt-1 mr-4 flex-shrink-0" />
                         <div>
                             <p className="text-sm text-gray-400">Business Hours</p>
                             <p className="text-lg text-white font-light">
-                                10 AM – 7 PM (Mon–Sat)
+                                10 AM – 7 PM 
                             </p>
                         </div>
                     </motion.div>
@@ -185,10 +187,10 @@ const Contact = () => {
                 </motion.h2>
 
                 <motion.div className="flex space-x-6" variants={itemVariants}>
-                    <a href="#" aria-label="Instagram" className="text-gray-500 hover:text-[#006aff] transition-colors">
+                    <a href="https://www.instagram.com/akaarmedia/" target='https://www.instagram.com/akaarmedia/' aria-label="Instagram" className="text-gray-500 hover:text-[#006aff] transition-colors">
                         <Instagram className="w-6 h-6" />
                     </a>
-                    <a href="#" aria-label="LinkedIn" className="text-gray-500 hover:text-[#006aff] transition-colors">
+                    <a href="https://www.linkedin.com/in/akaarmedia/"  target='https://www.linkedin.com/in/akaarmedia/' aria-label="LinkedIn" className="text-gray-500 hover:text-[#006aff] transition-colors">
                         <Linkedin className="w-6 h-6" />
                     </a>
                     <a href="#" aria-label="YouTube" className="text-gray-500 hover:text-[#006aff] transition-colors">

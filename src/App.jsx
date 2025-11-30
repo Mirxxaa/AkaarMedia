@@ -31,6 +31,10 @@ const ScrollPageNavigator = ({ children }) => {
     // This state will be shared with the Footer
     const [scrollCounter, setScrollCounter] = useState(0); 
     const resetTimer = useRef(null);
+    const lastScrollTime = useRef(0);
+    const isScrolling = useRef(false);
+    const touchStartY = useRef(0);
+    const scrollAccumulator = useRef(0);
     
     // Constant defining the required number of scrolls to trigger navigation
     const REQUIRED_SCROLLS = 7; 
@@ -57,42 +61,43 @@ const ScrollPageNavigator = ({ children }) => {
             // Ensure the new page starts at the top
             window.scrollTo(0, 0); 
             
-            console.log(`Mapsd to: ${nextPath}`);
+            console.log(`Navigated to: ${nextPath}`);
         }
     }, [navigate, location.pathname]);
 
-    
+    // Check if user is at bottom of page
+    const isAtBottom = useCallback(() => {
+        const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const clientHeight = window.innerHeight;
+        return scrollTop + clientHeight >= scrollHeight - 10;
+    }, []);
 
-    // --- Core Scroll Detection Logic ---
- const handleWheel = useCallback((e) => {
-    // 1. DETERMINE SCROLL MAGNITUDE THRESHOLD
-    // Standard mouse wheel delta is usually 3-50. 
-    // Touchpads can easily produce deltas of 100 or more per "tick".
-    // We'll use a small constant for normalization.
-    const DELTA_THRESHOLD = 50; 
-
-    // Determine if the scroll is large enough to count as a single "step down"
-    // We also check e.deltaY > 0 for scrolling down.
-    const isScrollingDownStep = e.deltaY > 0 && Math.abs(e.deltaY) > 5;
-    
-    // 2. CHECK IF THIS IS A LARGE TOUCHPAD SCROLL
-    // Only proceed if the delta is smaller than the threshold OR if it's a mouse wheel scroll.
-    // If the delta is large (touchpad), we should only count it once per "scroll action".
-    const shouldCountScroll = Math.abs(e.deltaY) <= DELTA_THRESHOLD;
-
-    // Check if the user is at the bottom of the page (existing logic)
-    const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const clientHeight = window.innerHeight;
-    const atBottom = scrollTop + clientHeight >= scrollHeight - 5; 
-
-    // --- MODIFIED SCROLL DOWN LOGIC ---
-    // Change the condition to check for the new scroll step.
-    if (atBottom && isScrollingDownStep) {
+    // --- IMPROVED SCROLL DETECTION WITH DEBOUNCING ---
+    const handleWheel = useCallback((e) => {
+        const now = Date.now();
+        const timeSinceLastScroll = now - lastScrollTime.current;
         
-        // If it's a small mouse scroll OR the counter is currently 0 (start of a new large scroll action)
-        // This ensures a large touchpad "flick" counts as only 1 or 2 increments, not 10.
-        if (shouldCountScroll || scrollCounter === 0) { 
+        // Only process downward scrolls when at bottom
+        if (e.deltaY > 0 && isAtBottom()) {
+            // Accumulate scroll delta for more natural detection
+            scrollAccumulator.current += Math.abs(e.deltaY);
+            
+            // Debounce: We need enough time AND enough scroll distance
+            // 250ms prevents trackpad from counting multiple times in one gesture
+            // But still allows intentional repeated scrolls
+            if (timeSinceLastScroll < 250) {
+                return;
+            }
+            
+            // Require minimum scroll distance (prevents tiny movements from counting)
+            if (scrollAccumulator.current < 100) {
+                return;
+            }
+            
+            // Reset accumulator for next scroll
+            scrollAccumulator.current = 0;
+            lastScrollTime.current = now;
             
             if (resetTimer.current) {
                 clearTimeout(resetTimer.current);
@@ -100,54 +105,116 @@ const ScrollPageNavigator = ({ children }) => {
 
             setScrollCounter(prev => {
                 const newCounter = prev + 1;
+                console.log(`Scroll count: ${newCounter}/${REQUIRED_SCROLLS}`);
                 
                 if (newCounter >= REQUIRED_SCROLLS) { 
                     navigateNext();
                     return 0; 
                 }
                 
+                // Reset counter after 3 seconds of inactivity
                 resetTimer.current = setTimeout(() => {
                     setScrollCounter(0);
+                    scrollAccumulator.current = 0;
                     console.log('Scroll counter reset by timeout.');
-                }, 500); 
+                }, 3000); 
+                
+                return newCounter;
+            });
+        } else if (e.deltaY < 0 && scrollCounter > 0) {
+            // User scrolled up, reset the counter
+            setScrollCounter(0);
+            scrollAccumulator.current = 0;
+            lastScrollTime.current = now;
+            if (resetTimer.current) {
+                clearTimeout(resetTimer.current);
+            }
+        }
+    }, [navigateNext, scrollCounter, REQUIRED_SCROLLS, isAtBottom]);
+
+    // --- TOUCH SUPPORT FOR MOBILE ---
+    const handleTouchStart = useCallback((e) => {
+        touchStartY.current = e.touches[0].clientY;
+    }, []);
+
+    const handleTouchMove = useCallback((e) => {
+        if (!isAtBottom()) {
+            return;
+        }
+
+        const touchY = e.touches[0].clientY;
+        const diff = touchStartY.current - touchY;
+
+        // User is swiping up (scrolling down content)
+        if (diff > 50) { // Threshold for a meaningful swipe
+            const now = Date.now();
+            const timeSinceLastScroll = now - lastScrollTime.current;
+            
+            // Debounce touch events too
+            if (timeSinceLastScroll < 300) {
+                return;
+            }
+            
+            lastScrollTime.current = now;
+            touchStartY.current = touchY; // Reset for next swipe
+            
+            if (resetTimer.current) {
+                clearTimeout(resetTimer.current);
+            }
+
+            setScrollCounter(prev => {
+                const newCounter = prev + 1;
+                console.log(`Touch swipe count: ${newCounter}/${REQUIRED_SCROLLS}`);
+                
+                if (newCounter >= REQUIRED_SCROLLS) { 
+                    navigateNext();
+                    return 0; 
+                }
+                
+                // Reset counter after 2 seconds of inactivity
+                resetTimer.current = setTimeout(() => {
+                    setScrollCounter(0);
+                    console.log('Touch counter reset by timeout.');
+                }, 2000); 
                 
                 return newCounter;
             });
         }
-        
-    } else if (e.deltaY < 0 && scrollCounter > 0) {
-        // User scrolled up, reset the counter immediately
-        setScrollCounter(0);
-        if (resetTimer.current) {
-            clearTimeout(resetTimer.current);
-        }
-    }
-}, [navigateNext, scrollCounter, REQUIRED_SCROLLS]);
+    }, [navigateNext, scrollCounter, REQUIRED_SCROLLS, isAtBottom]);
 
-    // 4. Attach and clean up the wheel listener
+    const handleTouchEnd = useCallback(() => {
+        touchStartY.current = 0;
+    }, []);
+
+    // Attach event listeners
     useEffect(() => {
-        window.addEventListener('wheel', handleWheel);
+        window.addEventListener('wheel', handleWheel, { passive: true });
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
+        
         return () => {
             window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
             if (resetTimer.current) {
                 clearTimeout(resetTimer.current);
             }
         };
-    }, [handleWheel]); 
+    }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]); 
 
-    // Ensure the counter resets on page change (for navigation/url changes)
+    // Ensure the counter resets on page change
     useEffect(() => {
         setScrollCounter(0);
+        lastScrollTime.current = 0;
+        scrollAccumulator.current = 0;
     }, [location.pathname]);
 
-
     return (
-        // Provide the scroll state to children (especially Footer)
         <ScrollContext.Provider value={{ scrollCounter, REQUIRED_SCROLLS }}>
-            {/* ADD 'relative' CLASS HERE to ensure Framer Motion works correctly */}
             <div className="main-content-wrapper relative"> 
                 {children}
-                {/* The Footer is part of the content */}
                 <Footer /> 
             </div>
         </ScrollContext.Provider>
@@ -155,15 +222,11 @@ const ScrollPageNavigator = ({ children }) => {
 }
 
 // --- Main App Component ---
-
 function App() {
   return (
   <Router>
       <NavigationBar />
-      
-      {/* PLACE THE SCROLL TO TOP COMPONENT HERE */}
       <ScrollToTop /> 
-
       <ScrollPageNavigator>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -173,7 +236,6 @@ function App() {
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </ScrollPageNavigator>
-      
     </Router>
   );
 }

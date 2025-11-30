@@ -138,7 +138,6 @@ const STUDIO_TOOLS = [
 
 
 const AkaarMediaLogoShape = ({ size = 100, color = "currentColor" }) => {
-// ... (Logo SVG code remains the same)
   return (
     <svg 
       width={size} 
@@ -161,6 +160,8 @@ const AkaarMediaLogoShape = ({ size = 100, color = "currentColor" }) => {
 
 export default function About() {
   const containerRef = useRef(null);
+  const teamSectionRef = useRef(null);
+  const supportSectionRef = useRef(null);
   const [currentProgress, setCurrentProgress] = useState(0);
 
   const { scrollYProgress } = useScroll({
@@ -168,7 +169,17 @@ export default function About() {
     offset: ["start start", "end end"]
   });
 
-// ... (Effect and Scroll Transformation logic remains the same) ...
+  // Scroll progress for Team section
+  const { scrollYProgress: teamScrollProgress } = useScroll({
+    target: teamSectionRef,
+    offset: ["start end", "end start"]
+  });
+
+  // Scroll progress for Support section
+  const { scrollYProgress: supportScrollProgress } = useScroll({
+    target: supportSectionRef,
+    offset: ["start end", "end start"]
+  });
 
   // Track progress for logging and debugging
   useEffect(() => {
@@ -179,67 +190,90 @@ export default function About() {
     return () => unsubscribe();
   }, [scrollYProgress]);
 
-  // Height of the sticky section, increased for better content pacing
-  // 1500vh / 100 = 15x viewport height. Let's make it 3000vh for 3 content screens.
-  const SECTION_2_HEIGHT = "3000vh";
+  // OPTIMIZED: Reduced section height to eliminate empty space
+  const SECTION_2_HEIGHT = "400vh"; // Reduced from 2000vh to remove empty space
   
-  // --- Scroll Ranges Optimization ---
-  // The scroll input (0 to 1) needs to be mapped to the content phases.
-  // 0.00 - 0.10: Hero section exit (transition)
-  // 0.10 - 0.20: Logo grows to full screen (Phase A)
-  // 0.20 - 0.90: Content phases (Phase B)
-  // 0.90 - 1.00: Exit animation
+  // --- OPTIMIZED Scroll Ranges - Much faster and tighter ---
+  // Phase A: Logo Growth (Faster and earlier exit)
+  const logoScale = useTransform(scrollYProgress, [0.03, 0.08, 0.12], [0.1, 0.6, 1.2]);
+  const logoOpacity = useTransform(scrollYProgress, [0.02, 0.08, 0.12, 0.14], [0, 1, 1, 0]);
 
-  // Phase A: Logo Growth
-  // 0.10 (start growing) to 0.20 (full screen)
-  const logoScale = useTransform(scrollYProgress, [0.08, 0.15, 0.20], [0.1, 0.6, 1.2]); // Controlled scale for visibility
-  const logoOpacity = useTransform(scrollYProgress, [0.05, 0.15, 0.20, 0.22], [0, 1, 1, 0]); // Fade out after content starts
-
-  // Phase B: Content Stagger (Dark Theme: #0f0f0f)
-  // New, wider ranges for better pacing:
-  const contentStart = 0.25;
-  const contentPacing = 0.20; // 20% scroll distance per content section
+  // Phase B: Content Stagger - Much faster with reduced gaps
+  const contentStart = 0.15;
+  const contentDuration = 0.10; // Reduced from 0.15 - each content displays for 10% scroll
+  const fadeTransition = 0.02; // Quick 2% fade
   
-  // Content 1: Story (Appears at 0.25, Fades out at 0.40)
+  // Content 1: Story (0.15 - 0.25)
   const contentOpacity1 = useTransform(scrollYProgress, 
-    [contentStart, contentStart + 0.05, contentStart + contentPacing, contentStart + contentPacing + 0.05], 
+    [contentStart, contentStart + fadeTransition, contentStart + contentDuration, contentStart + contentDuration + fadeTransition], 
     [0, 1, 1, 0]
   );
+  const contentY1 = useTransform(scrollYProgress,
+    [contentStart, contentStart + fadeTransition + 0.01],
+    [80, 0] // More pronounced slide up from 80px
+  );
   
-  // Content 2: Mission (Appears at 0.45, Fades out at 0.60)
+  // Content 2: Mission (0.25 - 0.35)
   const contentOpacity2 = useTransform(scrollYProgress, 
-    [contentStart + contentPacing, contentStart + contentPacing + 0.05, contentStart + (contentPacing * 2), contentStart + (contentPacing * 2) + 0.05], 
+    [contentStart + contentDuration, contentStart + contentDuration + fadeTransition, contentStart + (contentDuration * 2), contentStart + (contentDuration * 2) + fadeTransition], 
     [0, 1, 1, 0]
   );
+  const contentY2 = useTransform(scrollYProgress,
+    [contentStart + contentDuration, contentStart + contentDuration + fadeTransition + 0.01],
+    [80, 0]
+  );
   
-  // Content 3: Vision (Appears at 0.65, Fades out at 0.80)
+  // Content 3: Vision (0.35 - 0.45)
   const contentOpacity3 = useTransform(scrollYProgress, 
-    [contentStart + (contentPacing * 2), contentStart + (contentPacing * 2) + 0.05, contentStart + (contentPacing * 3), contentStart + (contentPacing * 3) + 0.05], 
+    [contentStart + (contentDuration * 2), contentStart + (contentDuration * 2) + fadeTransition, contentStart + (contentDuration * 3), contentStart + (contentDuration * 3) + fadeTransition], 
     [0, 1, 1, 0]
+  );
+  const contentY3 = useTransform(scrollYProgress,
+    [contentStart + (contentDuration * 2), contentStart + (contentDuration * 2) + fadeTransition + 0.01],
+    [80, 0]
   );
 
-  // Exit transition background color
-  const bgColorProgress = useTransform(scrollYProgress, [0.85, 0.95], ["#0f0f0f", "#0f0f0f"]);
+  // Exit transition background color - starts much earlier
+  const bgColorProgress = useTransform(scrollYProgress, [0.50, 0.60], ["#0f0f0f", "#0f0f0f"]);
+
+  // Team Section Animations - Smoother with ease curves
+  const teamHeaderY = useTransform(teamScrollProgress, [0.1, 0.4], [80, 0]);
+  const teamHeaderOpacity = useTransform(teamScrollProgress, [0.1, 0.4], [0, 1]);
+  const teamSubtitleY = useTransform(teamScrollProgress, [0.15, 0.45], [80, 0]);
+  const teamSubtitleOpacity = useTransform(teamScrollProgress, [0.15, 0.45], [0, 1]);
+  const teamCard1Y = useTransform(teamScrollProgress, [0.2, 0.5], [100, 0]);
+  const teamCard1Opacity = useTransform(teamScrollProgress, [0.2, 0.5], [0, 1]);
+  const teamCard2Y = useTransform(teamScrollProgress, [0.25, 0.55], [100, 0]);
+  const teamCard2Opacity = useTransform(teamScrollProgress, [0.25, 0.55], [0, 1]);
+
+  // Support Section Animations - Smoother with ease curves
+  const supportHeaderY = useTransform(supportScrollProgress, [0.1, 0.4], [80, 0]);
+  const supportHeaderOpacity = useTransform(supportScrollProgress, [0.1, 0.4], [0, 1]);
+  const supportSubtitleY = useTransform(supportScrollProgress, [0.15, 0.45], [80, 0]);
+  const supportSubtitleOpacity = useTransform(supportScrollProgress, [0.15, 0.45], [0, 1]);
 
 
   const contentData = [
     {
       heading: "Our Story",
       icon: Sparkles,
-      text: "Akaar Media began with one simple belief. Design isn’t decoration it’s communication. Today, we are a multidisciplinary team delivering branding, digital experiences, motion design, and marketing solutions to clients across industries.",
-      opacity: contentOpacity1
+      text: "Akaar Media began with one simple belief. Design isn't decoration it's communication. Today, we are a multidisciplinary team delivering branding, digital experiences, motion design, and marketing solutions to clients across industries.",
+      opacity: contentOpacity1,
+      y: contentY1
     },
     {
       heading: "Our Mission",
       icon: Target,
       text: "To help brands communicate clearly through design, strategy, and technology.",
-      opacity: contentOpacity2
+      opacity: contentOpacity2,
+      y: contentY2
     },
     {
       heading: "Our Vision",
       icon: Eye,
       text: "To be a trusted creative partner for modern businesses — delivering work that feels fresh, intentional, and unforgettable.",
-      opacity: contentOpacity3
+      opacity: contentOpacity3,
+      y: contentY3
     },
   ];
 
@@ -280,9 +314,9 @@ export default function About() {
         </motion.div>
       </motion.section>
 
-      {/* ===== SECTION 2: STICKY SCROLL NARRATIVE (FIXED) ===== */}
+      {/* ===== SECTION 2: STICKY SCROLL NARRATIVE (OPTIMIZED) ===== */}
       <motion.section
-        data-nav-theme="dark" // Keep navigation theme dark
+        data-nav-theme="dark"
         style={{ backgroundColor: bgColorProgress, height: SECTION_2_HEIGHT }}
         className="relative"
       >
@@ -292,7 +326,7 @@ export default function About() {
           <motion.div
             style={{
               scale: logoScale,
-              opacity: logoOpacity, // Fade out the logo when content starts
+              opacity: logoOpacity,
               position: "absolute",
               left: "50%",
               top: "50%",
@@ -303,15 +337,14 @@ export default function About() {
           >
            <AkaarMediaLogoShape 
               size={1000}
-              color="white" // Ensure logo is white on dark background
+              color="white"
             />
           </motion.div>
 
-          {/* Phase B: Narrative Content (Content is now centered and fully dark themed) */}
+          {/* Phase B: Narrative Content */}
           <motion.div
             className="absolute inset-0 flex items-center justify-center p-6 sm:p-12"
           >
-            {/* Content Area - Centered and max-width added for responsiveness */}
             <div className="relative w-full max-w-4xl h-full flex items-center justify-center">
               
               {contentData.map((section, idx) => {
@@ -319,8 +352,10 @@ export default function About() {
                 return (
                   <motion.div
                     key={idx}
-                    style={{ opacity: section.opacity }}
-                    // Position all content absolutely in the center
+                    style={{ 
+                      opacity: section.opacity,
+                      y: section.y
+                    }}
                     className="absolute inset-0 flex items-center justify-center text-center"
                   >
                     <div className="w-full max-w-2xl px-4">
@@ -348,42 +383,39 @@ export default function About() {
       {/* ===== STATIC SECTIONS START HERE ===== */}
       
       {/* ===== STATIC SECTION: CORE TEAMS (Existing Content) ===== */}
-     <motion.section   className="w-full min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center py-24 sm:py-32">
-        
-      <motion.div 
-          className="max-w-7xl w-full mx-auto p-8 md:p-16 lg:p-24"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.1 }}
-          variants={containerVariants} 
+     <motion.section 
+        ref={teamSectionRef}
+        className="w-full min-h-screen bg-[#0f0f0f] text-white flex items-center justify-center py-24 sm:py-32"
       >
+        
+      <div className="max-w-7xl w-full mx-auto p-8 md:p-16 lg:p-24">
           
           {/* 1. MAIN HEADER */}
           <motion.h2 
+              style={{ y: teamHeaderY, opacity: teamHeaderOpacity }}
+              transition={{ type: "spring", stiffness: 100, damping: 30 }}
               className="text-5xl sm:text-6xl lg:text-8xl font-light tracking-tighter mb-4 text-[#006aff] leading-tight" 
-              variants={itemVariants} 
           >
               OUR TEAM
           </motion.h2>
 
           {/* 2. SUBTITLE */}
           <motion.p 
+              style={{ y: teamSubtitleY, opacity: teamSubtitleOpacity }}
+              transition={{ type: "spring", stiffness: 100, damping: 30 }}
               className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-16 max-w-4xl font-light leading-relaxed"
-              variants={itemVariants}
           >
               A Team Built for Modern Brands
           </motion.p>
 
           {/* 3. CONTENT GRID */}
-          <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16"
-              variants={containerVariants}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16">
               
               {/* A. Web Development Team */}
               <motion.div 
+                  style={{ y: teamCard1Y, opacity: teamCard1Opacity }}
+                  transition={{ type: "spring", stiffness: 100, damping: 30 }}
                   className="p-6 border-l-4 border-[#006aff]/50 transition duration-300 hover:border-[#006aff] rounded-md"
-                  variants={itemVariants}
               >
                   <h3 className="text-2xl sm:text-3xl font-normal mb-4 tracking-tight text-white"> 
                       Web Development Team
@@ -406,8 +438,8 @@ export default function About() {
 
               {/* B. Creative Design Team */}
               <motion.div 
+                  style={{ y: teamCard2Y, opacity: teamCard2Opacity }}
                   className="p-6 border-l-4 border-[#006aff]/50 transition duration-300 hover:border-[#006aff] rounded-md"
-                  variants={itemVariants}
               >
                   <h3 className="text-2xl sm:text-3xl font-normal mb-4 tracking-tight text-white"> 
                       Creative Design Team
@@ -431,48 +463,54 @@ export default function About() {
                   </ul>
               </motion.div>
 
-          </motion.div>
-      </motion.div>
+          </div>
+      </div>
     </motion.section>
     
     {/* ===== STATIC SECTION: SUPPORT SYSTEM (New Content) ===== */}
-    <motion.section className="w-full bg-[#0f0f0f] text-white flex justify-center py-20 sm:py-28 border-t border-gray-800">
-        <motion.div 
-            className="max-w-7xl w-full mx-auto p-8 md:p-16 lg:p-24"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            variants={containerVariants} 
-        >
+    <motion.section 
+        ref={supportSectionRef}
+        className="w-full bg-[#0f0f0f] text-white flex justify-center py-20 sm:py-28 border-t border-gray-800"
+    >
+        <div className="max-w-7xl w-full mx-auto p-8 md:p-16 lg:p-24">
             
             {/* Main Header */}
             <motion.h2 
+                style={{ y: supportHeaderY, opacity: supportHeaderOpacity }}
                 className="text-4xl sm:text-5xl lg:text-7xl font-light tracking-tighter mb-4 text-white leading-tight" 
-                variants={itemVariants} 
             >
                 OUR SUPPORT SYSTEM
             </motion.h2>
 
             {/* Subtitle */}
             <motion.p 
+                style={{ y: supportSubtitleY, opacity: supportSubtitleOpacity }}
                 className="text-lg sm:text-xl lg:text-2xl text-gray-400 mb-16 max-w-4xl font-light leading-relaxed"
-                variants={itemVariants}
             >
                 Specialized teams dedicated to quality, communication, and execution.
             </motion.p>
 
             {/* Support Team Grid */}
-            <motion.div 
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
-                variants={containerVariants}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {SUPPORT_TEAM.map((team, index) => {
                     const Icon = team.icon;
+                    // Create staggered animations for each card
+                    const cardY = useTransform(
+                        supportScrollProgress, 
+                        [0.2 + (index * 0.05), 0.5 + (index * 0.05), 0.7, 1], 
+                        [120, 0, 0, -120]
+                    );
+                    const cardOpacity = useTransform(
+                        supportScrollProgress, 
+                        [0.2 + (index * 0.05), 0.5 + (index * 0.05), 0.7, 1], 
+                        [0, 1, 1, 0]
+                    );
+                    
                     return (
                         <motion.div 
                             key={index}
+                            style={{ y: cardY, opacity: cardOpacity }}
                             className="p-6 bg-[#1a1a1a] rounded-xl border border-[#1a1a1a] transition duration-300 hover:border-[#006aff] flex flex-col justify-start h-full"
-                            variants={itemVariants}
                         >
                             <Icon className="w-6 h-6 text-[#006aff] mb-4" strokeWidth={2} />
                             
@@ -486,8 +524,8 @@ export default function About() {
                         </motion.div>
                     );
                 })}
-            </motion.div>
-        </motion.div>
+            </div>
+        </div>
     </motion.section>
 
 
@@ -496,7 +534,6 @@ export default function About() {
                 <h2 className="text-center text-3xl text-gray-200 font-light mb-8">
                     Our Core Toolkit
                 </h2>
-                {/* 2. Render the carousel and pass the data via the 'logos' prop */}
                 <LogoCarousel logos={STUDIO_TOOLS} />
             </motion.section>
       
@@ -575,7 +612,7 @@ export default function About() {
                 style={{ borderColor: '#006aff' }}
                 variants={itemVariants}
             >
-                The principles that guide our work, define our commitment, and ensure your project’s success.
+                The principles that guide our work, define our commitment, and ensure your project's success.
             </motion.p>
 
             {/* Core Values Grid */}
@@ -586,19 +623,18 @@ export default function About() {
                 {CORE_VALUES_LIST_WITH_ICONS.map((value, index) => (
                     <motion.div 
                         key={index}
-                        // Card styling: dark background, subtle border, sleek hover effect
                         className="p-8 bg-[#0f0f0f] rounded-xl border border-gray-800 transition duration-300 hover:border-[#006aff] hover:shadow-2xl hover:shadow-[#006aff]/10 flex flex-col justify-start h-full"
                         variants={itemVariants}
                         transition={{ duration: 0.5, delay: index * 0.1 }} 
                     >
-                        {/* ICON PLACEHOLDER (Using the index number as you did) */}
+                        {/* ICON PLACEHOLDER */}
                         <div className="w-8 h-8 text-[#006aff] mb-4 flex items-center justify-center border border-gray-700 rounded-lg">
                             <span className="text-sm font-semibold">
                                 {index + 1}
                             </span>
                         </div>
 
-                        {/* Value Title - Large and impactful */}
+                        {/* Value Title */}
                         <h3 className="text-3xl font-semibold mb-4 tracking-tight text-white leading-snug"> 
                             {value.title}
                         </h3>

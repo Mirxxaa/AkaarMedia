@@ -14,7 +14,7 @@ import WEBDEV from "../assets/WEBDEV.png";
 import PrintMaterial from "../assets/printMaterial.png";
 import GD from "../assets/GD.jpg";
 import DigitalMarketing from "../assets/digitalMarketing.jpg";
-
+import TestimonialsSlider from "../components/TestimonialsSlider";
 
 const industryIcons = [
   { icon: <FaLaptop size={40} />, label: "Tech" },
@@ -443,40 +443,7 @@ const lineStartProgress = (index) => {
     
     {/* --- TESTIMONIALS --- */}
     <div className="pt-20">
-      <h2 
-          className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tighter mb-16 text-white leading-tight text-left" 
-          variants={itemVariants} 
-      >
-          CLIENT TESTIMONIALS
-      </h2>
-      
-      <div className="grid md:grid-cols-3 gap-8">
-        {[1, 2, 3].map((t, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.2 }}
-            // Background/Border updated for corporate black theme consistency
-            className="p-6 rounded-2xl bg-[#0f0f0f] border border-gray-800 shadow-lg" 
-          >
-            {/* Star ratings */}
-            <span className="text-yellow-400">
-              <FaStar className="inline mr-1" />
-              <FaStar className="inline mr-1" />
-              <FaStar className="inline mr-1" />
-              <FaStar className="inline mr-1" />
-              <FaStar className="inline" />
-            </span>
-            
-            <p className="text-gray-300 text-base mt-4 leading-relaxed font-light">
-              “Akaar Media helped transform our brand presence. Stunning visuals and timely delivery.”
-            </p>
-            <p className="mt-4 text-white text-sm font-semibold">— Client Name</p>
-          </motion.div>
-        ))}
-      </div>
+    <TestimonialsSlider />
     </div>
     {/* --- END: TESTIMONIALS --- */}
     

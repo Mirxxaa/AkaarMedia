@@ -37,7 +37,7 @@ const SERVICE_CATEGORIES = [
             "We build visual identities that tell your story and set you apart.",
             "Logos, complete brand systems, packaging, guidelines, marketing materials — everything your brand needs to look consistent and professional."
         ],
-        image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1633533452148-a9657d2c9a5f?q=80&w=3731&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
         title: "UI/UX Design",
@@ -46,7 +46,7 @@ const SERVICE_CATEGORIES = [
             "From wireframes to polished interfaces — we create digital experiences that feel intuitive, clean, and conversion-focused.",
             "Built using Figma & Framer for seamless collaboration and execution."
         ],
-        image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=1760&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
         title: "Web Development",
@@ -55,7 +55,7 @@ const SERVICE_CATEGORIES = [
             "High-performance websites engineered for speed, stability, and scalability.",
             "We develop using the latest technologies: React, Next.js, Node.js, Python, JavaScript, Webflow, and custom solutions tailored to your business."
         ],
-        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1593720213428-28a5b9e94613?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
         title: "Digital Marketing",
@@ -64,7 +64,7 @@ const SERVICE_CATEGORIES = [
             "Grow your brand with effective strategies and performance-driven campaigns.",
             "Meta Ads, Google Ads, content creation, funnel optimization, analytics, and complete digital presence management."
         ],
-        image: "https://images.unsplash.com/photo-1531545514256-4dc9162e75e1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1686061593269-420785fb8fa0?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
         title: "Graphic & Motion Design",
@@ -73,7 +73,7 @@ const SERVICE_CATEGORIES = [
             "From everyday social content to high-quality animated visuals — we design media that grabs attention and communicates fast.",
             "Brand visuals, illustrations, motion graphics, reels, explainer videos, and 3D animations."
         ],
-        image: "https://images.unsplash.com/photo-1561472328-863a66bb0f29?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1666728451779-85c0bc53d2ef?q=80&w=2831&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
     {
         title: "Print & Production",
@@ -82,7 +82,7 @@ const SERVICE_CATEGORIES = [
             "Premium print and production services for brands that want to make an impact offline.",
             "Signage, packaging, wall wraps, indoor & outdoor branding, brochures, display stands, and more — backed by strict QC and delivery standards."
         ],
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+        image: "https://images.unsplash.com/photo-1663433567177-9f94be0bff4c?q=80&w=2340&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     },
 ];
 
@@ -360,7 +360,7 @@ export default function Services() {
                     className="text-xl sm:text-2xl lg:text-3xl text-gray-300 mb-20 max-w-4xl font-light leading-relaxed"
                     variants={itemVariants}
                 >
-                    A clean, five-step process designed for **clarity**, **efficiency**, and **impactful results**.
+                    A clean, five-step process designed for clarity, efficiency, and impactful results.
                 </motion.p>
 
                 <div className="relative">
@@ -440,7 +440,7 @@ export default function Services() {
                     className="text-xl sm:text-2xl lg:text-3xl text-gray-400 mb-16 max-w-4xl font-light leading-relaxed border-l-4 border-gray-800 pl-6"
                     variants={itemVariants}
                 >
-                    What sets us apart is our commitment to **integrated excellence** and **uncompromised quality**.
+                    What sets us apart is our commitment to integrated excellence and uncompromised quality.
                 </motion.p>
 
                 <motion.div 
